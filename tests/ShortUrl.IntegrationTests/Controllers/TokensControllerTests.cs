@@ -1,0 +1,64 @@
+﻿using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
+using ShortUrl.Api.Dto;
+using ShortUrl.IntegrationTests.Data;
+
+namespace ShortUrl.IntegrationTests.Controllers;
+
+public class TokensControllerTests : WebApplicationFactory<Program> {
+    private static readonly JsonSerializerOptions JsonWebSerializerOptions = new(JsonSerializerDefaults.Web);
+
+    [Theory]
+    [ClassData(typeof(ValidUrls))]
+    private async Task CreateShortLink_WithValidUrl_ShouldReturnOk(string url)
+    {
+        var client = CreateDefaultClient();
+        var dto = new CreateShortLinkDto(url);
+        var response = await client.PostAsJsonAsync("/", dto);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Theory]
+    [ClassData(typeof(ValidUrls))]
+    private async Task CreateShortLink_WithValidUrl_ShouldReturnValidDto(string url)
+    {
+        var client = CreateDefaultClient();
+        var dto = new CreateShortLinkDto(url);
+        var response = await client.PostAsJsonAsync("/", dto);
+        var responseDto =
+            JsonSerializer.Deserialize<ShortLinkDto>(await response.Content.ReadAsStreamAsync(),
+                JsonWebSerializerOptions);
+        response.Should().NotBeNull();
+
+        responseDto?.OriginalUrl.Should().Be(url);
+        responseDto?.Token.Should().NotBeNullOrEmpty();
+    }
+
+    [Theory]
+    [ClassData(typeof(InvalidUrls))]
+    private async Task CreateShortLink_WithInvalidUrl_ShouldReturnBadRequest(string url)
+    {
+        var client = CreateDefaultClient();
+        var dto = new CreateShortLinkDto(url);
+        var response = await client.PostAsJsonAsync("/", dto);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Theory]
+    [ClassData(typeof(ValidUrls))]
+    private async Task CreateShortLinkThenRedirect_WithValidUrl_ShouldRedirect(string url)
+    {
+        var client = CreateDefaultClient();
+        var dto = new CreateShortLinkDto(url);
+        var response = await client.PostAsJsonAsync("/", dto);
+        var responseDto =
+            JsonSerializer.Deserialize<ShortLinkDto>(await response.Content.ReadAsStreamAsync(),
+                JsonWebSerializerOptions);
+        var redirectResponse = await client.GetAsync(responseDto?.Token);
+        redirectResponse.StatusCode.Should().Be(HttpStatusCode.Redirect);
+    }
+}
