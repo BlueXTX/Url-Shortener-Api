@@ -14,6 +14,6 @@ public class InProcessDistributedCounter : IDistributedCounter {
 
     public Task<int> Get()
     {
-        return Task.FromResult(_counter++);
+        return Task.FromResult(Interlocked.Increment(ref _counter));
     }
 }

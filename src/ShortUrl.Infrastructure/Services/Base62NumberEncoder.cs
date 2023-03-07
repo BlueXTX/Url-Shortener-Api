@@ -9,8 +9,9 @@ public class Base62NumberEncoder : INumberEncoder {
 
     public string Encode(int number)
     {
-        var stringBuilder = new StringBuilder();
+        if (number == 0) return Alphabet[0].ToString();
 
+        var stringBuilder = new StringBuilder();
         while (number > 0)
         {
             stringBuilder.Append(Alphabet[number % Base]);
