@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ShortUrl.Application.Interfaces;
+using ShortUrl.Infrastructure.Options;
 using ShortUrl.Infrastructure.Persistence;
 using ShortUrl.Infrastructure.Services;
 
@@ -27,6 +28,10 @@ public static class ServiceCollectionExtension {
         services.AddScoped<INumberEncoder, Base62NumberEncoder>();
         services.AddScoped<IUrlShortener, UrlShortener>();
         services.AddScoped<IQrCodeGenerator, DefaultQrCodeGenerator>();
+        services.AddScoped<IFileStorage, LocalDriveFileStorage>();
+        services.AddOptions<LocalDriveFileStorageOptions>()
+            .Bind(configuration.GetSection(LocalDriveFileStorageOptions.SectionName))
+            .Validate(options => options.UseRelativePath ? true : string.IsNullOrWhiteSpace(options.BasePath));
         
         return services;
     }

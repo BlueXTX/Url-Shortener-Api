@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using ShortUrl.Infrastructure.Options;
@@ -40,6 +39,17 @@ public class LocalDriveFileStorageTests {
     }
 
     [Theory]
+    [ClassData(typeof(InvalidStrings))]
+    private async Task Write_WithInvalidName_ShouldThrow(string fileName)
+    {
+        var fileStorage = CreateFileStorage();
+        byte[] bytes = new byte[512];
+
+        var act = () => fileStorage.Write(fileName, new MemoryStream(bytes));
+        await act.Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Theory]
     [ClassData(typeof(ValidFileSizes))]
     private async Task Read_AfterWrite_BytesShouldBeTheSame(int fileSize)
     {
@@ -59,6 +69,16 @@ public class LocalDriveFileStorageTests {
     }
 
     [Theory]
+    [ClassData(typeof(InvalidStrings))]
+    private async Task Read_WithInvalidName_ShouldThrow(string fileName)
+    {
+        var fileStorage = CreateFileStorage();
+
+        var act = () => fileStorage.Read(fileName);
+        await act.Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Theory]
     [ClassData(typeof(ValidFileSizes))]
     private async Task Delete_AfterWrite_FileShouldBeDeleted(int fileSize)
     {
@@ -70,5 +90,15 @@ public class LocalDriveFileStorageTests {
         await fileStorage.Delete(fileName);
         bool actual = File.Exists(GetFilePath(fileName));
         actual.Should().BeFalse();
+    }
+    
+    [Theory]
+    [ClassData(typeof(InvalidStrings))]
+    private async Task Delete_WithInvalidName_ShouldThrow(string fileName)
+    {
+        var fileStorage = CreateFileStorage();
+
+        var act = () => fileStorage.Delete(fileName);
+        await act.Should().ThrowAsync<ArgumentException>();
     }
 }
