@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +6,12 @@ using Microsoft.Extensions.Caching.Distributed;
 using ShortUrl.Api.Dto;
 using ShortUrl.Application.Interfaces;
 
-namespace ShortUrl.Api.Controllers;
+namespace ShortUrl.Api.Controllers.v1;
 
 [ApiController]
-public class TokensController : ControllerBase {
+[Route("api/v{api:apiVersion}/[controller]")]
+[ApiVersion("1.0")]
+public class TokenController : ControllerBase {
     private readonly IUrlShortener _urlShortener;
     private readonly IApplicationContext _context;
     private readonly IValidator<CreateShortLinkDto> _validator;
@@ -20,7 +20,7 @@ public class TokensController : ControllerBase {
     private static readonly DistributedCacheEntryOptions CacheEntryOptions =
         new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1));
 
-    public TokensController(IUrlShortener urlShortener, IApplicationContext context,
+    public TokenController(IUrlShortener urlShortener, IApplicationContext context,
         IValidator<CreateShortLinkDto> validator, IDistributedCache cache)
     {
         _urlShortener = urlShortener;
@@ -29,7 +29,7 @@ public class TokensController : ControllerBase {
         _cache = cache;
     }
 
-    [HttpPost("/")]
+    [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     public async Task<ActionResult<ShortLinkDto>> CreateShortLink([FromBody] CreateShortLinkDto dto)
     {

@@ -5,10 +5,12 @@ using Microsoft.Extensions.Options;
 using ShortUrl.Application.Interfaces;
 using ShortUrl.Infrastructure.Options;
 
-namespace ShortUrl.Api.Controllers;
+namespace ShortUrl.Api.Controllers.v1;
 
 [ApiController]
-public class QrCodesController : ControllerBase {
+[Route("api/v{api:apiVersion}/[controller]")]
+[ApiVersion("1.0")]
+public class QrController : ControllerBase {
     private readonly IApplicationContext _context;
     private readonly IQrCodeGenerator _qrCodeGenerator;
     private readonly QrCodeGenerationOptions _qrCodeGenerationOptions;
@@ -18,7 +20,7 @@ public class QrCodesController : ControllerBase {
     private static readonly DistributedCacheEntryOptions CacheEntryOptions =
         new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
 
-    public QrCodesController(IApplicationContext context, IQrCodeGenerator qrCodeGenerator, IFileStorage fileStorage,
+    public QrController(IApplicationContext context, IQrCodeGenerator qrCodeGenerator, IFileStorage fileStorage,
         IDistributedCache cache, IOptions<QrCodeGenerationOptions> qrCodeGeneratorOptions)
     {
         _context = context;
@@ -28,7 +30,7 @@ public class QrCodesController : ControllerBase {
         _cache = cache;
     }
 
-    [HttpGet("/qr/{token}")]
+    [HttpGet("{token}")]
     [ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
     public async Task<IActionResult> GenerateQrCode(string token)
     {
