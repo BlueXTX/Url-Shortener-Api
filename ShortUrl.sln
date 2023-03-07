@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShortUrl.Infrastructure", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShortUrl.UnitTests", "tests\ShortUrl.UnitTests\ShortUrl.UnitTests.csproj", "{3A9B75E8-B9D4-488A-BD71-6B0EAC892213}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShortUrl.Api", "src\ShortUrl.Api\ShortUrl.Api.csproj", "{2966E337-E773-4F10-843D-EB2334579F65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{3A9B75E8-B9D4-488A-BD71-6B0EAC892213}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A9B75E8-B9D4-488A-BD71-6B0EAC892213}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A9B75E8-B9D4-488A-BD71-6B0EAC892213}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2966E337-E773-4F10-843D-EB2334579F65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2966E337-E773-4F10-843D-EB2334579F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2966E337-E773-4F10-843D-EB2334579F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2966E337-E773-4F10-843D-EB2334579F65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
