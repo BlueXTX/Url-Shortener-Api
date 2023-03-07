@@ -4,6 +4,7 @@ env:
   DOTNET_VERSION: '7.0'
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "master", "develop" ]
   pull_request:
@@ -32,6 +33,15 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
       
+    - name: Cache dependencies
+      id: cache-dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+        
     - name: Build
       run: dotnet build --configuration Release --no-restore
     
