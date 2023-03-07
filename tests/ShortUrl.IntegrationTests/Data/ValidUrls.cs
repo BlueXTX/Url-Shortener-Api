@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ShortUrl.IntegrationTests;
+namespace ShortUrl.IntegrationTests.Data;
 
 public class ValidUrls : IEnumerable<object[]> {
     public IEnumerator<object[]> GetEnumerator()

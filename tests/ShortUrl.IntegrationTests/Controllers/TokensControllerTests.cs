@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using ShortUrl.Api;
 using ShortUrl.Api.Dto;
 using ShortUrl.IntegrationTests.Data;
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using ShortUrl.Application.Interfaces;
+using ShortUrl.Infrastructure.Options;
 
 namespace ShortUrl.Infrastructure.Services;
 
@@ -27,5 +28,3 @@ public class LocalDriveFileStorage : IFileStorage {
         throw new NotImplementedException();
     }
 }
-
-public record LocalDriveFileStorageOptions(string BasePath, bool UseRelativePath = true);
