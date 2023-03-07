@@ -33,6 +33,9 @@ public static class ServiceCollectionExtension {
             .Bind(configuration.GetSection(LocalDriveFileStorageOptions.SectionName))
             .Validate(options => options.UseRelativePath ? true : !string.IsNullOrWhiteSpace(options.BasePath));
 
+        services.AddOptions<QrCodeGenerationOptions>()
+            .Bind(configuration.GetSection(QrCodeGenerationOptions.SectionName));
+
         return services;
     }
 }
