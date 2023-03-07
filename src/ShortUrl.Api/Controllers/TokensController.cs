@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,9 @@ public class TokensController : ControllerBase {
     private readonly IApplicationContext _context;
     private readonly IValidator<CreateShortLinkDto> _validator;
     private readonly IDistributedCache _cache;
+
+    private static readonly DistributedCacheEntryOptions CacheEntryOptions =
+        new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1));
 
     public TokensController(IUrlShortener urlShortener, IApplicationContext context,
         IValidator<CreateShortLinkDto> validator, IDistributedCache cache)
@@ -44,6 +48,7 @@ public class TokensController : ControllerBase {
 
     [ProducesResponseType((int)HttpStatusCode.Redirect)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
     [HttpGet("{token}")]
     public async Task<IActionResult> RedirectToOriginalUrl(string token)
     {
@@ -53,7 +58,7 @@ public class TokensController : ControllerBase {
         var shortLink = await _context.ShortLinks.FirstOrDefaultAsync(x => x.Token == token);
         if (shortLink is null) return NotFound();
 
-        await _cache.SetStringAsync($"url_{token}", shortLink.OriginalUrl);
+        await _cache.SetStringAsync($"url_{token}", shortLink.OriginalUrl, CacheEntryOptions);
         return Redirect(shortLink.OriginalUrl);
     }
 }

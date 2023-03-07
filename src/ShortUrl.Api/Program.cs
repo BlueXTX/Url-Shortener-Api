@@ -11,8 +11,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddResponseCaching();
 
 var app = builder.Build();
+app.UseResponseCaching();
 
 if (app.Environment.IsDevelopment())
 {
