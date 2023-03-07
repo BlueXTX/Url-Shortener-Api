@@ -69,4 +69,27 @@ public class TokensControllerTests : WebApplicationFactory<Program> {
         var response = await client.GetAsync("b");
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [Theory]
+    [ClassData(typeof(ValidUrls))]
+    private async Task GenerateQr_WithExistingToken_ContentLengthShouldBePositive(string url)
+    {
+        var client = CreateDefaultClient();
+        var dto = new CreateShortLinkDto(url);
+        var createResponse = await client.PostAsJsonAsync("/", dto);
+        var responseDto = JsonSerializer.Deserialize<ShortLinkDto>(await createResponse.Content.ReadAsStreamAsync(),
+            JsonWebSerializerOptions);
+        var qrResponse = await client.GetAsync($"qr/{responseDto?.Token}");
+        var content = await qrResponse.Content.ReadAsStreamAsync();
+        content.Length.Should().BePositive();
+        qrResponse.Content.Headers.ContentType?.ToString().Should().Be("image/png");
+    }
+
+    [Fact]
+    private async Task GenerateQr_WithNonExistentToken_ShouldReturn404()
+    {
+        var client = CreateDefaultClient();
+        var response = await client.GetAsync("/qr/123");
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }

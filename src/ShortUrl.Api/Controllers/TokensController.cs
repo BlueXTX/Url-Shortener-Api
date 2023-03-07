@@ -8,7 +8,6 @@ using ShortUrl.Application.Interfaces;
 namespace ShortUrl.Api.Controllers;
 
 [ApiController]
-[Route("/")]
 public class TokensController : ControllerBase {
     private readonly IUrlShortener _urlShortener;
     private readonly IApplicationContext _context;
