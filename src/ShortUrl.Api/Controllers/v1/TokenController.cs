@@ -3,7 +3,9 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using ShortUrl.Api.Dto;
+using ShortUrl.Api.Options;
 using ShortUrl.Application.Interfaces;
 
 namespace ShortUrl.Api.Controllers.v1;
@@ -16,17 +18,16 @@ public class TokenController : ControllerBase {
     private readonly IApplicationContext _context;
     private readonly IValidator<CreateShortLinkDto> _validator;
     private readonly IDistributedCache _cache;
-
-    private static readonly DistributedCacheEntryOptions CacheEntryOptions =
-        new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1));
+    private readonly CacheOptions _cacheOptions;
 
     public TokenController(IUrlShortener urlShortener, IApplicationContext context,
-        IValidator<CreateShortLinkDto> validator, IDistributedCache cache)
+        IValidator<CreateShortLinkDto> validator, IDistributedCache cache, IOptions<CacheOptions> cacheOptions)
     {
         _urlShortener = urlShortener;
         _context = context;
         _validator = validator;
         _cache = cache;
+        _cacheOptions = cacheOptions.Value;
     }
 
     [HttpPost]
@@ -52,13 +53,22 @@ public class TokenController : ControllerBase {
     [HttpGet("{token}")]
     public async Task<IActionResult> RedirectToOriginalUrl(string token)
     {
-        string? cachedUrl = await _cache.GetStringAsync($"url_{token}");
-        if (!string.IsNullOrWhiteSpace(cachedUrl)) return Redirect(cachedUrl);
+        if (_cacheOptions.CacheTokens)
+        {
+            string? cachedUrl = await _cache.GetStringAsync($"url_{token}");
+            if (!string.IsNullOrWhiteSpace(cachedUrl)) return Redirect(cachedUrl);
+        }
 
         var shortLink = await _context.ShortLinks.FirstOrDefaultAsync(x => x.Token == token);
         if (shortLink is null) return NotFound();
 
-        await _cache.SetStringAsync($"url_{token}", shortLink.OriginalUrl, CacheEntryOptions);
+        if (_cacheOptions.CacheTokens)
+        {
+            await _cache.SetStringAsync($"url_{token}", shortLink.OriginalUrl,
+                new DistributedCacheEntryOptions().SetSlidingExpiration(
+                    TimeSpan.FromMinutes(_cacheOptions.CacheTokensTime)));
+        }
+
         return Redirect(shortLink.OriginalUrl);
     }
 }

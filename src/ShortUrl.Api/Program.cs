@@ -1,5 +1,7 @@
+using FluentAssertions.Common;
 using FluentValidation;
 using ShortUrl.Api.Configuration;
+using ShortUrl.Api.Options;
 using ShortUrl.Api.Validators;
 using ShortUrl.Infrastructure;
 
@@ -10,7 +12,20 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateShortLinkDtoValidator
 builder.Services.AddControllers();
 builder.Services.ConfigureSwagger();
 
-builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddOptions<CacheOptions>()
+    .Bind(builder.Configuration.GetSection(CacheOptions.SectionName))
+    .Validate(options => options is { MaxSize: >= 0, CacheTokensTime: >= 0, CacheImagesTime: >= 0 })
+    .ValidateOnStart();
+
+
+builder.Services.AddDistributedMemoryCache(options => {
+    var cacheOptions = builder.Configuration
+        .GetSection(CacheOptions.SectionName)
+        .Get<CacheOptions>() ?? new CacheOptions();
+    options.SizeLimit = 1024 * 1024 * cacheOptions.MaxSize;
+});
+
 builder.Services.AddResponseCaching();
 
 var app = builder.Build();
