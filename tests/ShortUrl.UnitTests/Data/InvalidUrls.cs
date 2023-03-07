@@ -8,6 +8,7 @@ public class InvalidUrls : IEnumerable<object[]> {
         yield return new object[] { string.Empty };
         yield return new object[] { null };
         yield return new object[] { " " };
+        yield return new object[] { "google.ru" };
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
