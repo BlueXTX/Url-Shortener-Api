@@ -29,6 +29,7 @@ public class QrCodesController : ControllerBase {
     }
 
     [HttpGet("/qr/{token}")]
+    [ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
     public async Task<IActionResult> GenerateQrCode(string token)
     {
         byte[]? cachedQr = await _cache.GetAsync($"qr_{token}");

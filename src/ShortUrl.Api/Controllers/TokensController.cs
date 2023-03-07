@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,7 @@ public class TokensController : ControllerBase {
 
     [ProducesResponseType((int)HttpStatusCode.Redirect)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
     [HttpGet("{token}")]
     public async Task<IActionResult> RedirectToOriginalUrl(string token)
     {
