@@ -15,6 +15,9 @@ public class QrCodesController : ControllerBase {
     private readonly IFileStorage _fileStorage;
     private readonly IDistributedCache _cache;
 
+    private static readonly DistributedCacheEntryOptions CacheEntryOptions =
+        new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
+
     public QrCodesController(IApplicationContext context, IQrCodeGenerator qrCodeGenerator, IFileStorage fileStorage,
         IDistributedCache cache, IOptions<QrCodeGenerationOptions> qrCodeGeneratorOptions)
     {
@@ -42,7 +45,7 @@ public class QrCodesController : ControllerBase {
         using var writeStream = new MemoryStream(qr);
         await _fileStorage.Write(token + ".png", writeStream);
 
-        await _cache.SetAsync($"qr_{token}", qr);
+        await _cache.SetAsync($"qr_{token}", qr, CacheEntryOptions);
 
         return new FileContentResult(qr, "image/png");
     }
