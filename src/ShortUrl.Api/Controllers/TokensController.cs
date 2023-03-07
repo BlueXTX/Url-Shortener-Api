@@ -47,13 +47,13 @@ public class TokensController : ControllerBase {
     [HttpGet("{token}")]
     public async Task<IActionResult> RedirectToOriginalUrl(string token)
     {
-        string? cachedUrl = await _cache.GetStringAsync(token);
+        string? cachedUrl = await _cache.GetStringAsync($"url_{token}");
         if (!string.IsNullOrWhiteSpace(cachedUrl)) return Redirect(cachedUrl);
 
         var shortLink = await _context.ShortLinks.FirstOrDefaultAsync(x => x.Token == token);
         if (shortLink is null) return NotFound();
 
-        await _cache.SetStringAsync(token, shortLink.OriginalUrl);
+        await _cache.SetStringAsync($"url_{token}", shortLink.OriginalUrl);
         return Redirect(shortLink.OriginalUrl);
     }
 }
