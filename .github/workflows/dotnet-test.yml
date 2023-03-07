@@ -1,7 +1,7 @@
 name: Build and test
 
 env:
-  DOTNET_VERSION: '7.0.3'
+  DOTNET_VERSION: '7.0'
 
 on:
   push:
