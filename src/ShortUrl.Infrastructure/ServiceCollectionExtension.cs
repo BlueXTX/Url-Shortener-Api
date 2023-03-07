@@ -31,8 +31,8 @@ public static class ServiceCollectionExtension {
         services.AddScoped<IFileStorage, LocalDriveFileStorage>();
         services.AddOptions<LocalDriveFileStorageOptions>()
             .Bind(configuration.GetSection(LocalDriveFileStorageOptions.SectionName))
-            .Validate(options => options.UseRelativePath ? true : string.IsNullOrWhiteSpace(options.BasePath));
-        
+            .Validate(options => options.UseRelativePath ? true : !string.IsNullOrWhiteSpace(options.BasePath));
+
         return services;
     }
 }

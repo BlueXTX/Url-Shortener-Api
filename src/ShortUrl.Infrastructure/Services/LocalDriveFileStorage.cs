@@ -11,7 +11,7 @@ public class LocalDriveFileStorage : IFileStorage {
         ? Path.Join(AppContext.BaseDirectory, _options.BasePath)
         : _options.BasePath;
 
-    public LocalDriveFileStorage(IOptionsSnapshot<LocalDriveFileStorageOptions> options)
+    public LocalDriveFileStorage(IOptions<LocalDriveFileStorageOptions> options)
     {
         _options = options.Value;
         EnsureDirectoryCreated();
@@ -36,7 +36,10 @@ public class LocalDriveFileStorage : IFileStorage {
         if (string.IsNullOrWhiteSpace(fileName))
             throw new ArgumentException($"\"{fileName}\" is not valid file name");
 
-        var fileStream = File.OpenRead(Path.Join(BasePath, fileName));
+        string filePath = Path.Join(BasePath, fileName);
+        if (!File.Exists(filePath)) return Task.FromResult(Stream.Null);
+
+        var fileStream = File.OpenRead(filePath);
         return Task.FromResult<Stream>(fileStream);
     }
 
@@ -44,6 +47,9 @@ public class LocalDriveFileStorage : IFileStorage {
     {
         if (string.IsNullOrWhiteSpace(fileName))
             throw new ArgumentException($"\"{fileName}\" is not valid file name");
+
+        string filePath = Path.Join(BasePath, fileName);
+        if (!File.Exists(filePath)) return Task.CompletedTask;
 
         File.Delete(Path.Join(BasePath, fileName));
         return Task.CompletedTask;
