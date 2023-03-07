@@ -16,7 +16,14 @@ public static class ServiceCollectionExtension {
             else builder.UseNpgsql(configuration.GetConnectionString("Postgres"));
         });
 
-        services.AddSingleton<IDistributedCounter, InProcessDistributedCounter>();
+        services.AddSingleton<IDistributedCounter, InProcessDistributedCounter>(provider => {
+            using var scope = provider.CreateScope();
+            int maxId = scope.ServiceProvider.GetRequiredService<IApplicationContext>().ShortLinks
+                .DefaultIfEmpty()
+                .Max(x => x == null ? 0 : x.Id);
+            return new InProcessDistributedCounter(maxId);
+        });
+
         services.AddScoped<INumberEncoder, Base62NumberEncoder>();
         services.AddScoped<IUrlShortener, UrlShortener>();
         return services;
