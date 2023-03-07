@@ -23,7 +23,7 @@ public class QrCodesController : ControllerBase {
         var shortLink = await _context.ShortLinks.FirstOrDefaultAsync(x => x.Token == token);
         if (shortLink is null) return NotFound();
 
-        var readStream = await _fileStorage.Read(token);
+        await using var readStream = await _fileStorage.Read(token);
         if (readStream != Stream.Null && readStream.Length > 0) return new FileStreamResult(readStream, "image/png");
 
         byte[] qr = _qrCodeGenerator.Generate(token);
