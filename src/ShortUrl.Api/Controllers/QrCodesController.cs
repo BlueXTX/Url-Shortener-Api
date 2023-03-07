@@ -28,7 +28,7 @@ public class QrCodesController : ControllerBase {
     [HttpGet("/qr/{token}")]
     public async Task<IActionResult> GenerateQrCode(string token)
     {
-        byte[]? cachedQr = await _cache.GetAsync(token);
+        byte[]? cachedQr = await _cache.GetAsync($"qr_{token}");
         if (cachedQr is not null) return new FileContentResult(cachedQr, "image/png");
 
         var shortLink = await _context.ShortLinks.FirstOrDefaultAsync(x => x.Token == token);
@@ -42,7 +42,7 @@ public class QrCodesController : ControllerBase {
         using var writeStream = new MemoryStream(qr);
         await _fileStorage.Write(token + ".png", writeStream);
 
-        await _cache.SetAsync(token, qr);
+        await _cache.SetAsync($"qr_{token}", qr);
 
         return new FileContentResult(qr, "image/png");
     }
