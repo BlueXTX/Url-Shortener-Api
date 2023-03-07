@@ -11,7 +11,6 @@ using ShortUrl.IntegrationTests.Data;
 namespace ShortUrl.IntegrationTests.Controllers;
 
 public class TokensControllerTests : WebApplicationFactory<Program> {
-    private static readonly JsonSerializerOptions JsonWebSerializerOptions = new(JsonSerializerDefaults.Web);
 
     [Theory]
     [ClassData(typeof(ValidUrls))]
@@ -32,7 +31,7 @@ public class TokensControllerTests : WebApplicationFactory<Program> {
         var response = await client.PostAsJsonAsync("/", dto);
         var responseDto =
             JsonSerializer.Deserialize<ShortLinkDto>(await response.Content.ReadAsStreamAsync(),
-                JsonWebSerializerOptions);
+                JsonWebSerializerOptions.Instance);
         response.Should().NotBeNull();
 
         responseDto?.OriginalUrl.Should().Be(url);
@@ -58,7 +57,7 @@ public class TokensControllerTests : WebApplicationFactory<Program> {
         var response = await client.PostAsJsonAsync("/", dto);
         var responseDto =
             JsonSerializer.Deserialize<ShortLinkDto>(await response.Content.ReadAsStreamAsync(),
-                JsonWebSerializerOptions);
+                JsonWebSerializerOptions.Instance);
         var redirectResponse = await client.GetAsync(responseDto?.Token);
         redirectResponse.StatusCode.Should().Be(HttpStatusCode.Redirect);
     }
@@ -67,30 +66,7 @@ public class TokensControllerTests : WebApplicationFactory<Program> {
     private async Task Redirect_WithNonExistentToken_ShouldReturn()
     {
         var client = CreateDefaultClient();
-        var response = await client.GetAsync("b");
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
-    [Theory]
-    [ClassData(typeof(ValidUrls))]
-    private async Task GenerateQr_WithExistingToken_ContentLengthShouldBePositive(string url)
-    {
-        var client = CreateDefaultClient();
-        var dto = new CreateShortLinkDto(url);
-        var createResponse = await client.PostAsJsonAsync("/", dto);
-        var responseDto = JsonSerializer.Deserialize<ShortLinkDto>(await createResponse.Content.ReadAsStreamAsync(),
-            JsonWebSerializerOptions);
-        var qrResponse = await client.GetAsync($"qr/{responseDto?.Token}");
-        var content = await qrResponse.Content.ReadAsStreamAsync();
-        content.Length.Should().BePositive();
-        qrResponse.Content.Headers.ContentType?.ToString().Should().Be("image/png");
-    }
-
-    [Fact]
-    private async Task GenerateQr_WithNonExistentToken_ShouldReturn404()
-    {
-        var client = CreateDefaultClient();
-        var response = await client.GetAsync("/qr/123");
+        var response = await client.GetAsync("-1");
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

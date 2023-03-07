@@ -9,7 +9,12 @@ namespace ShortUrl.UnitTests.Services;
 
 public class LocalDriveFileStorageTests {
     private const string BasePath = "/images";
-    private static readonly LocalDriveFileStorageOptions Options = new(BasePath);
+
+    private static readonly LocalDriveFileStorageOptions Options =
+        new()
+        {
+            BasePath = BasePath
+        };
 
     private static string GetFilePath(string fileName) => Options.UseRelativePath
         ? Path.Join(AppContext.BaseDirectory, BasePath, fileName)
@@ -91,7 +96,7 @@ public class LocalDriveFileStorageTests {
         bool actual = File.Exists(GetFilePath(fileName));
         actual.Should().BeFalse();
     }
-    
+
     [Theory]
     [ClassData(typeof(InvalidStrings))]
     private async Task Delete_WithInvalidName_ShouldThrow(string fileName)
