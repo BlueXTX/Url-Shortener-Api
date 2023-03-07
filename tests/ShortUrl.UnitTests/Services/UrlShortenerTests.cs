@@ -1,11 +1,17 @@
 ﻿using FluentAssertions;
+using ShortUrl.Application.Interfaces;
 using ShortUrl.Infrastructure.Services;
 using ShortUrl.UnitTests.Data;
 
 namespace ShortUrl.UnitTests.Services;
 
 public class UrlShortenerTests {
-    private readonly UrlShortener _urlShortener = new();
+    private readonly UrlShortener _urlShortener;
+
+    public UrlShortenerTests(IDistributedCounter counter, INumberEncoder encoder, IApplicationContext context)
+    {
+        _urlShortener = new UrlShortener(counter, encoder, context);
+    }
 
     [Theory]
     [ClassData(typeof(ValidUrls))]
