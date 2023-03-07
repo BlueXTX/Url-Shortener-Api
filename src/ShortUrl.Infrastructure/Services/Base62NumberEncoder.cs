@@ -4,12 +4,12 @@ namespace ShortUrl.Infrastructure.Services;
 
 public class Base62NumberEncoder : INumberEncoder {
 
-    public string Encode(long number)
+    public string Encode(int number)
     {
         throw new NotImplementedException();
     }
 
-    public long Decode(string value)
+    public int Decode(string value)
     {
         throw new NotImplementedException();
     }

@@ -10,7 +10,7 @@ public class Base62NumberEncoderTests {
     [Fact]
     private void Encode_ResultShouldNotBeNullOrEmpty()
     {
-        const long number = 1;
+        const int number = 1;
         string actual = _encoder.Encode(number);
         actual.Should().NotBeNullOrEmpty();
     }
@@ -26,7 +26,7 @@ public class Base62NumberEncoderTests {
     [Fact]
     private void Decode_WithPreviouslyEncodedValue_ShouldBeDecoded()
     {
-        const long number = 1;
+        const int number = 1;
         string encodedValue = _encoder.Encode(number);
         long actual = _encoder.Decode(encodedValue);
         actual.Should().Be(number);
