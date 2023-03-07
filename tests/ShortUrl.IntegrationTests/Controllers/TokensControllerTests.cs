@@ -61,4 +61,12 @@ public class TokensControllerTests : WebApplicationFactory<Program> {
         var redirectResponse = await client.GetAsync(responseDto?.Token);
         redirectResponse.StatusCode.Should().Be(HttpStatusCode.Redirect);
     }
+
+    [Fact]
+    private async Task Redirect_WithNonExistentToken_ShouldReturn()
+    {
+        var client = CreateDefaultClient();
+        var response = await client.GetAsync("b");
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }
