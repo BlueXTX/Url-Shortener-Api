@@ -26,6 +26,8 @@ public static class ServiceCollectionExtension {
 
         services.AddScoped<INumberEncoder, Base62NumberEncoder>();
         services.AddScoped<IUrlShortener, UrlShortener>();
+        services.AddScoped<IQrCodeGenerator, DefaultQrCodeGenerator>();
+        
         return services;
     }
 }
