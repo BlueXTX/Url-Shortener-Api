@@ -7,10 +7,10 @@ namespace ShortUrl.UnitTests.Services;
 public class Base62NumberEncoderTests {
     private readonly Base62NumberEncoder _encoder = new();
 
-    [Fact]
-    private void Encode_ResultShouldNotBeNullOrEmpty()
+    [Theory]
+    [ClassData(typeof(TestNumbers))]
+    private void Encode_ResultShouldNotBeNullOrEmpty(int number)
     {
-        const int number = 1;
         string actual = _encoder.Encode(number);
         actual.Should().NotBeNullOrEmpty();
     }
@@ -23,10 +23,10 @@ public class Base62NumberEncoderTests {
         act.Should().Throw<ArgumentException>();
     }
 
-    [Fact]
-    private void Decode_WithPreviouslyEncodedValue_ShouldBeDecoded()
+    [Theory]
+    [ClassData(typeof(TestNumbers))]
+    private void Decode_WithPreviouslyEncodedValue_ShouldBeDecoded(int number)
     {
-        const int number = 1;
         string encodedValue = _encoder.Encode(number);
         long actual = _encoder.Decode(encodedValue);
         actual.Should().Be(number);
