@@ -1,4 +1,3 @@
-using FluentAssertions.Common;
 using FluentValidation;
 using ShortUrl.Api.Configuration;
 using ShortUrl.Api.Options;

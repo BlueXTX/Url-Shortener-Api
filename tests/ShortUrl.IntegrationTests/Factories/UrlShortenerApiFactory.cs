@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ShortUrl.Api;
 using ShortUrl.Application.Interfaces;
 using ShortUrl.Infrastructure.Persistence;
 

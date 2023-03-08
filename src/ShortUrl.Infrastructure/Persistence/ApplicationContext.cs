@@ -6,7 +6,7 @@ using ShortUrl.Infrastructure.Configuration.Entities;
 namespace ShortUrl.Infrastructure.Persistence;
 
 public class ApplicationContext : DbContext, IApplicationContext {
-    public DbSet<ShortLink> ShortLinks { get; set; }
+    public DbSet<ShortLink> ShortLinks { get; set; } = null!;
 
     public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) {}
 
